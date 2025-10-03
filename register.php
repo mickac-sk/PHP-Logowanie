@@ -22,12 +22,20 @@
             exit();
         }
 
+        //hash password
+        $password_hashed = password_hash($_POST['password'], PASSWORD_DEFAULT);
+
         //check if user exists in the database
-        $sql = "SELECT * FROM `users` WHERE username =".$_POST['login'];
+        $sql = "SELECT * FROM `users` WHERE 'username' = '".$_POST['login']."'";
+
         $result = $conn->query($sql);
+
 
         // $conn->query($sql) zwróci false jezeli jest brak wynikow lub obiekt mysqli_result
         //var_dump($result);
+
+        
+        
         
         if($result->num_rows > 0){
             // POKAZ (nie do aplikacji)
@@ -37,6 +45,17 @@
             $_SESSION['regiester_error'] = "User already exists";
             header('Location: register.php');
             exit();
+        }else{
+            // tworzymy uzykownika
+            $sql2 = "INSERT INTO `users` (`username`, `password`) VALUES ('".$_POST['login']."','".$password_hashed."')";
+
+            echo $sql2;
+
+            $result = $conn->query($sql2);
+
+            if($result != true){
+                echo $conn->error;
+            }
         }
     }
 ?>
