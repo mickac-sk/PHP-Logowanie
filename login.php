@@ -1,35 +1,30 @@
 <?php
 session_start();
-//user 
-$valid_username = "admin";
-$valid_password = "password123";
 
-if($_SERVER['REQUEST_METHOD'] != "POST"){
-    header("Location: index.php");
-    exit();
-}
+if($_SERVER['REQUEST_METHOD'] == 'POST'){
+    require_once 'db_connection.php';
 
-// login data verification
-if(empty($_POST['username'])){
-    $_SESSION['error'] = "Username cannot be blank";
-    header("Location: index.php");
-    exit();
-}
+    $username = $_POST['username'];
+    $password = $_POST['password'];
 
-//password data verification
-if(empty($_POST['password'])){
-    $_SESSION['error'] = "Password cannot be blank";
-    header("Location: index.php");
-    exit();
-}
+    $sql = "SELECT * FROM `users` WHERE `username` = ?";
+    $stmt = $conn->prepare($sql);
 
-if($_POST['username'] === $valid_username && $_POST['password'] === $valid_password){
-    $_SESSION['loggedin_user'] = $_POST['username'];
-    $_SESSION['is_user_loggedin'] = true;
-    
-    header('Location: welcome.php');
-    exit();
-} else{
-    header('Location: index.php?loginerror=1');
-    exit();
+    if($stmt){
+        $stmt->bind_param('s', $username);
+        $stmt->execute();
+
+        $result = $stmt->get_result();
+
+        if($result->num_rows == 1){
+            $user = $result->fetch_asoc();
+
+            // czy jest poprawne hasło
+            
+        }
+    }
+
+}else{
+    //zwracamy błąd
+
 }
